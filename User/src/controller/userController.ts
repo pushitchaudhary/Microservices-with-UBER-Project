@@ -2,7 +2,7 @@ import {Request, Response} from 'express'
 
 import User, { IUser } from '../model/userModel';
 import bcrypt from 'bcryptjs';
-import { IUserRole } from '../enum/IUserEnum';
+import jwt from 'jsonwebtoken';
 
 
 class UserController {
@@ -54,6 +54,47 @@ class UserController {
 
         res.status(201).json({ message: 'User registered successfully' });
 
+    }
+
+    // User Login
+    async loginUser(req: Request, res: Response): Promise<void> {
+        // Implementation for user login
+        console.log('Received login request with body:', req.body);
+        const { email, password } = req.body || {};
+
+        // Basic validation: ensure required fields are present
+        if (!email || !password) {
+            res.status(400).json({ message: 'Missing required fields: email, password' });
+            return;
+        }
+
+        // Find user by email
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            res.status(401).json({ message: 'Invalid email or password' });
+            return;
+        }
+
+        // Compare provided password with stored hashed password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: 'Invalid email or password' });
+            return;
+        }
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            process.env.JWT_SECRET || 'your_jwt_secret',
+            { expiresIn: '1h' }
+        );
+
+        
+
+        // If login is successful, send a success response
+        console.log('User logged in successfully:', token);
+
+        res.status(200).json({ message: 'Login successful', token: token });
     }
 
    
