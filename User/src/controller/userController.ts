@@ -3,6 +3,7 @@ import {Request, Response} from 'express'
 import User, { IUser } from '../model/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest } from '../interface/AuthenticatedRequest';
 
 
 class UserController {
@@ -96,6 +97,32 @@ class UserController {
 
         res.status(200).json({ message: 'Login successful', token: token });
     }
+
+   // Get User Profile detail from JWT
+   async getUserProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
+        // Implementation for getting user profile from JWT
+        console.log('Received request to get user profile');
+        const userInformation = req.user;
+
+        try {
+            // Basic validation: ensure user information is present
+            if (!userInformation || !userInformation.userId) {
+                res.status(401).json({ message: 'Unauthorized access' });
+                return;
+            }
+            // Fetch user profile from database
+            const user = await User.findById(userInformation?.userId).select('-password'); // Exclude password field
+            if (!user) {
+                res.status(404).json({ message: 'User not found' });
+                return;
+            }
+
+            res.status(200).json({ user });
+        } catch (error) {
+            res.status(401).json({ message: 'Invalid or expired token' });
+        }
+    }   
+   
 
    
 
