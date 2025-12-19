@@ -4,9 +4,9 @@ const connectDB = async (): Promise<void> => {
     try {
         const uri = process.env.MONGO_URI as string;
         await mongoose.connect(uri);
-        console.log('MongoDB connected successfully');
+        console.log('MongoDB User Service connected successfully');
     } catch (error) {
-        console.error('MongoDB connection error:', error);
+        console.error('MongoDB User Service connection error:', error);
         process.exit(1);
     }
 };
