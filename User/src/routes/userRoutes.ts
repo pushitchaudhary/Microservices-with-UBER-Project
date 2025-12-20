@@ -10,7 +10,12 @@ router.route('/register').post(catchAsyncError(userController.registerUser));
 router.route('/login').post(catchAsyncError(userController.loginUser));
 
 // Protected User Profile Route
-router.route('/profile').get(  authenticatedUser ,catchAsyncError(userController.getUserProfile));
+// router.route('/profile').get(authenticatedUser ,catchAsyncError(userController.getUserProfile));
+
+router.route('/profile').get(userController.testEndpoint);
+
+// Test Endpoint
+// router.route('/test').get(userController.testEndpoint)
 
 
 

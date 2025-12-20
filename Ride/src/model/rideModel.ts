@@ -12,17 +12,19 @@ export interface IRide extends Document {
     createdAt: Date;
     updatedAt: Date;
     captionId: string;
-    status: string; // e.g., 'requested', 'in-progress', 'completed', 'canceled', 
+    status: string; // e.g., 'requested', 'in-progress', 'completed', 'canceled'
+    idempotencyKey: string;
 }   
 
 const RideSchema: Schema = new Schema(
     {
         toLocation: { type: String, required: true },
         fromLocation: { type: String, required: true },
-        rideDate: { type: Date, required: true },
+        rideDate: { type: Date, default: Date.now },
         userId: { type: String, required: true },
-        captionId: { type: String, required: true },
+        captionId: { type: String, required: false },
         status: { type: String, default: 'requested' }, // Default status is 'requested'
+        idempotencyKey: { type: String, required: true, unique: true },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
     },
@@ -30,6 +32,8 @@ const RideSchema: Schema = new Schema(
         timestamps: true,
     }
 );
+
+RideSchema.index({ idempotencyKey: 1 }, { unique: true });
 
 const RideModel = mongoose.model<IRide>('Ride', RideSchema);
 export default RideModel;

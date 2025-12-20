@@ -63,6 +63,7 @@ class UserController {
         console.log('Received login request with body:', req.body);
         const { email, password } = req.body || {};
 
+        
         // Basic validation: ensure required fields are present
         if (!email || !password) {
             res.status(400).json({ message: 'Missing required fields: email, password' });
@@ -87,7 +88,7 @@ class UserController {
         const token = jwt.sign(
             { userId: user._id, email: user.email },
             process.env.JWT_SECRET || 'your_jwt_secret',
-            { expiresIn: '1h' }
+            { expiresIn: '1d' }
         );
 
         
@@ -98,8 +99,8 @@ class UserController {
         res.status(200).json({ message: 'Login successful', token: token });
     }
 
-   // Get User Profile detail from JWT
-   async getUserProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
+    // Get User Profile detail from JWT
+    async getUserProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
         // Implementation for getting user profile from JWT
         console.log('Received request to get user profile');
         const userInformation = req.user;
@@ -122,9 +123,11 @@ class UserController {
             res.status(401).json({ message: 'Invalid or expired token' });
         }
     }   
-   
 
-   
+    async testEndpoint(req: Request, res: Response): Promise<void> {
+        res.status(200).json({ message: 'Test endpoint is working! new ho' });
+    }
+
 
 
 }

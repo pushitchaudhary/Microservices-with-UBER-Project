@@ -8,7 +8,9 @@ import { AuthenticatedRequest } from '../interface/AuthenticatedRequest';
 
 // Middleware to authenticate user using JWT
 export const authenticatedUser = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    console.log('Called User Authenticating user...');
     const authHeader = req.headers.authorization;
+
 
     if (!authHeader) {
         return res.status(401).json({ message: 'Authorization header missing or malformed' });
@@ -21,6 +23,7 @@ export const authenticatedUser = (req: AuthenticatedRequest, res: Response, next
     const token = authHeader.slice(7); // Remove 'Bearer ' prefix
 
     try {
+        
         const secret = process.env.JWT_SECRET || 'your_jwt_secret';
         const decoded: any = jwt.verify(token, secret);
         const user = { userId: decoded.userId, email: decoded.email };

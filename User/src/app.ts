@@ -32,6 +32,6 @@ app.use('/api/users', userRoutes)
 
 
 
-app.listen(PORTNUMBER, () => {
+app.listen(PORTNUMBER, '0.0.0.0', () => {
     console.log(`User Service is running on port ${PORTNUMBER}`)
 })
