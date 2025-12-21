@@ -68,7 +68,7 @@ class RiderController {
             { NX: true, EX: 300 }
             );
 
-    
+
 
             const ride = result;
             const created = ride.createdAt.getTime() === ride.updatedAt.getTime();
@@ -95,6 +95,26 @@ class RiderController {
 
             console.error('Ride request error:', error);
             res.status(500).json({ message: 'Could not process ride request', error: error?.message || 'Unknown error' });
+        }
+    }
+
+    //  Method to get all rides for a user
+    async getRides(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const userDetails = req.user;
+        
+        if (!userDetails) {
+            res.status(401).json({ message: 'Unauthorized: User details missing' });
+            return;
+        }
+
+        const userId = (userDetails as any)._id || (userDetails as any).userId;
+
+        try {
+            const rides = await RideModel.find({ userId }).sort({ rideDate: -1 });
+            res.status(200).json({ rides });
+        } catch (error: any) {
+            console.error('Error fetching rides:', error);
+            res.status(500).json({ message: 'Could not fetch rides', error: error?.message || 'Unknown error' });
         }
     }
     
