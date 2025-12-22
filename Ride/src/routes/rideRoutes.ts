@@ -9,5 +9,7 @@ router.route('/request-ride').post( authenticatedUser, errorHandler(RiderControl
 
 router.route(('/all-rides')).get( authenticatedUser, errorHandler(RiderController.getRides));
 
+router.route('/cancel-ride/:id').patch( authenticatedUser, errorHandler(RiderController.cancelRideByUser));
+
 
 export default router;

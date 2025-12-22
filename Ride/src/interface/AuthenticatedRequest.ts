@@ -12,5 +12,8 @@ export interface AuthenticatedRequest extends Express.Request {
     authorization?: string;
   };
   user?: { _id: string; email: string };
+  params: {};
+  riderId?: string;
+  
 
 }

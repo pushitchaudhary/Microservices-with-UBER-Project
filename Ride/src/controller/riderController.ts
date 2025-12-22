@@ -98,6 +98,56 @@ class RiderController {
         }
     }
 
+    // Ride Cancellation By User
+    async cancelRideByUser(req: AuthenticatedRequest, res: Response): Promise<void> {
+        const userDetails = req.user;
+        const {id} :any = req.params;
+        const rideId = id
+
+
+        console.log('Cancel Ride Request for rideId:', rideId);
+
+        if (!userDetails) {
+            res.status(401).json({ message: 'Unauthorized: User details missing' });
+            return;
+        }
+
+
+        
+        if (!rideId) {
+            res.status(400).json({ message: 'Missing required field: rideId' });
+            return;
+        }
+
+        const userId = (userDetails as any)._id || (userDetails as any).userId;
+
+        try {
+            const ride = await RideModel.findOne({ _id: rideId, userId });
+
+            if (!ride) {
+                res.status(404).json({ message: 'Ride not found' });
+                return;
+            }
+
+            if (ride.status === 'cancelled') {
+                res.status(200).json({ message: 'Ride already cancelled', ride });
+                return;
+            }
+            
+            // Use findOneAndUpdate to avoid validation issues
+            const updatedRide = await RideModel.findOneAndUpdate(
+                { _id: rideId, userId },
+                { status: 'cancelled' },
+                { new: true, runValidators: false }
+            );
+
+            res.status(200).json({ message: 'Ride cancelled successfully', ride: updatedRide });
+        } catch (error: any) {
+            console.error('Ride cancellation error:', error);
+            res.status(500).json({ message: 'Could not cancel ride', error: error?.message || 'Unknown error' });
+        }
+    }
+
     //  Method to get all rides for a user
     async getRides(req: AuthenticatedRequest, res: Response): Promise<void> {
         const userDetails = req.user;
@@ -117,6 +167,8 @@ class RiderController {
             res.status(500).json({ message: 'Could not fetch rides', error: error?.message || 'Unknown error' });
         }
     }
+
+ 
     
     // Method to get ride status
     // async getRideStatus(req: Request, res: Response): Promise<void> {
